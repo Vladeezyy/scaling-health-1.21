@@ -41,7 +41,7 @@ public class HeartCrystal extends StatBoosterItem {
     @Override
     protected boolean isStatIncreaseAllowed(Player player) {
         return EnabledFeatures.healthCrystalEnabled() &&
-                SHPlayers.getPlayerData(player).getBonusHearts(player) < SHPlayers.maxHealth();
+                SHPlayers.getPlayerData(player).getHeartCrystals() < SHPlayers.clampExtraHearts(Integer.MAX_VALUE); // 1.20.1 compared hearts with max health
     }
 
     @Override

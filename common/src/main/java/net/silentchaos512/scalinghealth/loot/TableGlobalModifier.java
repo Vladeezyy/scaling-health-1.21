@@ -26,8 +26,8 @@ public final class TableGlobalModifier {
               .orElse(LootTable.EMPTY)
               .getRandomItemsRaw(context, generatedLoot::add);
       generatedLoot.forEach(stack -> {
-         // (sic) 1.20.1 removes power crystals when they ARE enabled
-         if ((EnabledFeatures.powerCrystalEnabled() && stack.getItem() instanceof PowerCrystal)
+         // power crystals only when they are enabled (1.20.1's check was inverted: they never dropped)
+         if ((!EnabledFeatures.powerCrystalEnabled() && stack.getItem() instanceof PowerCrystal)
                  || (!EnabledFeatures.difficultyEnabled() && stack.getItem() instanceof DifficultyMutatorItem)) {
             stack.setCount(0);
          }

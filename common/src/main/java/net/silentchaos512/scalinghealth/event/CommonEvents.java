@@ -24,7 +24,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.silentchaos512.scalinghealth.ScalingHealth;
-import net.silentchaos512.scalinghealth.config.SHConfig;
 import net.silentchaos512.scalinghealth.lib.MathUtils;
 import net.silentchaos512.scalinghealth.network.ClientLoginMessage;
 import net.silentchaos512.scalinghealth.platform.Services;
@@ -33,14 +32,14 @@ import net.silentchaos512.scalinghealth.utils.config.SHDifficulty;
 import net.silentchaos512.scalinghealth.utils.config.SHMobs;
 import net.silentchaos512.scalinghealth.utils.config.SHPlayers;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /** 1.20.1 CommonEvents; each method names the Forge event that called it. */
 public final class CommonEvents {
-   public static List<UUID> spawnerSpawns = new ArrayList<>();
-   private static boolean changedLevelThisTick = false;
+   public static Set<UUID> spawnerSpawns = new HashSet<>();
+   private static final Set<UUID> changedLevelThisTick = new HashSet<>();
 
    private CommonEvents() {}
 
@@ -83,16 +82,18 @@ public final class CommonEvents {
          return;
 
       SHPlayers.getPlayerData(player).tick(player);
-      if (changedLevelThisTick) {
-         changedLevelThisTick = false;
+      if (changedLevelThisTick.remove(player.getUUID())) {
          SHPlayers.getPlayerData(player).updateStats(player);
       }
    }
 
-   /** PlayerXpEvent.LevelChange (priority LOWEST, not canceled) */
+   /**
+    * PlayerXpEvent.LevelChange (priority LOWEST, not canceled), and level ups from experience points (1.20.1 missed
+    * those: XP hearts only changed on the next login or crystal use). Per player (1.20.1: one flag for everyone).
+    */
    public static void onLevelChange(Player player) {
       if(!EnabledFeatures.healthXpEnabled()) return;
-      changedLevelThisTick = true; //delay the player update until after the event, so that the Exp on the player was updated.
+      changedLevelThisTick.add(player.getUUID()); //delay the player update until after the event, so that the Exp on the player was updated.
    }
 
    // TODO APRILS FOOLS?
@@ -106,7 +107,8 @@ public final class CommonEvents {
 
    /** PlayerSleepInBedEvent */
    public static void onPlayerSleepInBed(Player player) {
-      if (!player.level().isClientSide && SHConfig.CLIENT.warnWhenSleeping.get()) {
+      // 1.20.1 read the client config here, which a dedicated server doesn't load (a crash); sh_mechanics has the setting
+      if (!player.level().isClientSide && SHDifficulty.sleepWarningMessage()) {
          double newDifficulty = SHDifficulty.diffOnPlayerSleep(player);
          if (!MathUtils.doublesEqual(SHDifficulty.getDifficultyOf(player), newDifficulty, 0.1)) {
             ScalingHealth.LOGGER.debug("old={}, new={}", SHDifficulty.getDifficultyOf(player), newDifficulty);

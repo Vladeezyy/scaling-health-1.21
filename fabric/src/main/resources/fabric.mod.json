@@ -7,7 +7,8 @@
   "authors": ["SilentChaos512 (original)", "port contributors"],
   "contact": {
     "homepage": "https://github.com/SilentChaos512/ScalingHealth",
-    "issues": "https://github.com/SilentChaos512/ScalingHealth/issues"
+    "sources": "https://github.com/Vladeezyy/scaling-health-1.21",
+    "issues": "https://github.com/Vladeezyy/scaling-health-1.21/issues"
   },
   "license": "${license}",
   "icon": "scalinghealth_icon.png",

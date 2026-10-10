@@ -6,6 +6,7 @@ import net.silentchaos512.scalinghealth.event.CommonEvents;
 import net.silentchaos512.scalinghealth.event.DamageScaling;
 import net.silentchaos512.scalinghealth.event.PlayerBonusRegenHandler;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -14,12 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /** The 1.20.1 player events that neither loader has in the same place (used on both). */
 @Mixin(Player.class)
 public abstract class PlayerMixin {
-
-    /** TickEvent.PlayerTickEvent, phase START */
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void scalinghealth$tickStart(CallbackInfo ci) {
-        PlayerBonusRegenHandler.onPlayerTick((Player) (Object) this);
-    }
 
     /** TickEvent.PlayerTickEvent, phase END */
     @Inject(method = "tick", at = @At("TAIL"))
@@ -43,10 +38,26 @@ public abstract class PlayerMixin {
             PlayerBonusRegenHandler.onPlayerHurt(self);
     }
 
+    @Unique
+    private int scalinghealth$levelBefore;
+
     /** PlayerXpEvent.LevelChange (priority LOWEST, not canceled) */
     @Inject(method = "giveExperienceLevels", at = @At("TAIL"))
     private void scalinghealth$levelChange(int levels, CallbackInfo ci) {
         CommonEvents.onLevelChange((Player) (Object) this);
+    }
+
+    @Inject(method = "giveExperiencePoints", at = @At("HEAD"))
+    private void scalinghealth$pointsBefore(int xpPoints, CallbackInfo ci) {
+        scalinghealth$levelBefore = ((Player) (Object) this).experienceLevel;
+    }
+
+    /** Level ups from experience points (orbs) change the XP hearts too */
+    @Inject(method = "giveExperiencePoints", at = @At("TAIL"))
+    private void scalinghealth$pointsLevelChange(int xpPoints, CallbackInfo ci) {
+        Player self = (Player) (Object) this;
+        if (self.experienceLevel != scalinghealth$levelBefore)
+            CommonEvents.onLevelChange(self);
     }
 
     /** PlayerWakeUpEvent */

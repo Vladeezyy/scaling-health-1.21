@@ -57,7 +57,7 @@ public final class MobDifficultyHandler {
             BlightHandler.applyBlightPotionEffects(entity);
             //TODO no good in code method for determining if an entity is a boss or not, switch to tag?
             if(entity instanceof WitherBoss || entity instanceof EnderDragon) {
-                Component blight = Component.translatable("misc.scalinghealth.blight", entity.getDisplayName()).copy().withStyle(ChatFormatting.DARK_PURPLE);
+                Component blight = Component.translatable("blight.scalinghealth", entity.getDisplayName()).copy().withStyle(ChatFormatting.DARK_PURPLE);
                 entity.setCustomName(blight);
             }
         }

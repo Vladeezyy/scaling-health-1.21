@@ -14,6 +14,7 @@ public class DifficultyAffected implements IDifficultyAffected {
     public static final String NAME = ScalingHealth.MOD_ID + ":difficulty_affected";
     private static final String NBT_BLIGHT = "Blight";
     private static final String NBT_DIFFICULTY = "Difficulty";
+    private static final String NBT_PROCESSED = "Processed";
 
     private float difficulty;
     private boolean blight;
@@ -65,12 +66,16 @@ public class DifficultyAffected implements IDifficultyAffected {
         CompoundTag nbt = new CompoundTag();
         nbt.putBoolean(NBT_BLIGHT, blight);
         nbt.putFloat(NBT_DIFFICULTY, difficulty);
+        nbt.putBoolean(NBT_PROCESSED, processed);
         return nbt;
     }
 
     public void deserializeNBT(CompoundTag nbt) {
         blight = nbt.getBoolean(NBT_BLIGHT);
         difficulty = nbt.getFloat(NBT_DIFFICULTY);
+        // 1.20.1 didn't save it, so every loaded mob was processed again: new difficulty, health and effects, another
+        // blight roll. Data from 1.20.1 has no flag: a mob with a difficulty or blight status was processed.
+        processed = nbt.contains(NBT_PROCESSED) ? nbt.getBoolean(NBT_PROCESSED) : (difficulty != 0 || blight);
     }
 
     public static boolean canAttachTo(Object entity) {

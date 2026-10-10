@@ -34,8 +34,6 @@ public abstract class StatBoosterItem extends Item {
         super(properties.rarity(Rarity.RARE));
     }
 
-    private boolean usedForPet = false;
-
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
         tooltip.add(Component.translatable(this.getDescriptionId() + ".desc"));
@@ -44,10 +42,6 @@ public abstract class StatBoosterItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn) {
         ItemStack stack = player.getItemInHand(handIn);
-        if(usedForPet) {
-            if(world.isClientSide) usedForPet = false;
-            return new InteractionResultHolder<>(InteractionResult.FAIL, stack);
-        }
 
 
         final boolean statIncreaseAllowed = isStatIncreaseAllowed(player);
@@ -93,7 +87,6 @@ public abstract class StatBoosterItem extends Item {
             return;
         }
 
-        usedForPet = true;
         IPetData data = EntityDataHolder.pet(pet);
         if (data != null) data.addHealth(SHMechanics.getMechanics().mobMechanics().pets().petsHealthCrystalGain(), pet);
         stack.shrink(1);

@@ -1,7 +1,7 @@
 modLoader="javafml"
 loaderVersion="[4,)"
 license="${mod_license}"
-issueTrackerURL="https://github.com/SilentChaos512/ScalingHealth/issues"
+issueTrackerURL="https://github.com/Vladeezyy/scaling-health-1.21/issues"
 
 [[mods]]
 modId="${mod_id}"

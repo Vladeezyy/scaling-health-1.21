@@ -48,12 +48,13 @@ public class AreaDifficultyModes {
         }
 
         public double getWeightedAverage(Level world, BlockPos pos) {
+            // 1.20.1 did this in ints (1 - distanceSq / rSq is 1 for every player in range): a plain average
             double total = 0;
-            int totalWeight = 0;
-            int rSq = getRadius() * getRadius();
+            double totalWeight = 0;
+            double rSq = (double) getRadius() * getRadius();
             for (Pair<IDifficultySource, BlockPos> p : SHDifficulty.positionedPlayerSources(world, pos, getRadius())) {
-                int distanceSq = (int) pos.distSqr(p.getSecond());
-                int weight = 1 - distanceSq / rSq;
+                double distanceSq = pos.distSqr(p.getSecond());
+                double weight = 1 - distanceSq / rSq;
                 total += weight * p.getFirst().getDifficulty();
                 totalWeight += weight;
             }
@@ -85,11 +86,13 @@ public class AreaDifficultyModes {
 
         @Override
         public double getDifficulty(Level world, BlockPos pos) {
-            double extrema = 0;
+            // 1.20.1 started from 0, so the minimum was always 0
+            Double extrema = null;
             for (Tuple<BlockPos, IDifficultySource> tuple : SHDifficulty.allPlayerSources(world, pos, getRadius())) {
-                extrema = extremaFct.apply((double)tuple.getB().getDifficulty(), extrema);
+                double difficulty = tuple.getB().getDifficulty();
+                extrema = extrema == null ? difficulty : extremaFct.apply(difficulty, extrema);
             }
-            return extrema;
+            return extrema == null ? 0 : extrema;
         }
 
         @Override

@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.silentchaos512.scalinghealth.client.ClientHandler;
 import net.silentchaos512.scalinghealth.config.SHConfig;
-import net.silentchaos512.scalinghealth.data.DifficultySource;
 import net.silentchaos512.scalinghealth.lib.Anchor;
 import net.silentchaos512.scalinghealth.utils.config.SHDifficulty;
 
@@ -29,7 +28,7 @@ public class DebugOverlay extends DebugRenderOverlay {
                 "Difficulty (/" + ClientHandler.maxDifficultyValue + ")",
                 "- Mode=" + ClientHandler.areaMode.getName(),
                 "- Player=" + String.format(FLOAT_FORMAT, ClientHandler.playerDifficulty),
-                "- Server=" + String.format(FLOAT_FORMAT, DifficultySource.getOverworldCap().orElseGet(DifficultySource::new).getDifficulty()),
+                "- Server=" + String.format(FLOAT_FORMAT, ClientHandler.worldDifficulty), // 1.20.1: the integrated server's (0 on a dedicated server)
                 "- Area=" + String.format(FLOAT_FORMAT + " (x%.1f, ☽x%.1f)",
                         ClientHandler.areaDifficulty,
                         ClientHandler.locationMultiPercent / 100f,

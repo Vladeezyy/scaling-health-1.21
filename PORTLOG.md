@@ -64,23 +64,35 @@ overlay, the client / server configs and the `sh_mechanics` data pack files.
   once.
 - Bandages: milk still doesn't remove them (NeoForge: no milk cure; Fabric: kept by a mixin); a totem of undying
   does, as in 1.20.1.
-- The killer of a blight killed by a pet whose owner isn't a player: 1.20.1 cast the owner to Player (a crash); the
-  port treats it as no player.
 - Spawner bonus (`spawnerModifier`): monster spawners, as 1.20.1; the trial spawners new in 1.21 are not spawners
   there.
 - Item tooltips have no world in 1.21: the difficulty hearts show their amount also outside a world (1.20.1: 0).
 - Fabric: the difficulty meter and the debug overlay are drawn after the whole HUD (Forge: after the debug text / the
   chat); the armor row moves up exactly as with NeoForge's left status bar height.
 
-### 1.20.1 quirks kept
-- The bonus regeneration timer counts down twice per tick (the player tick handler didn't check the phase).
-- The loot modifiers take power crystals OUT of the added loot when power crystals are enabled (inverted check), so
-  by default they never drop from mobs or chests.
-- A mob's difficulty, health and blight roll are recalculated each time it is loaded (the "processed" flag isn't
-  saved; blight status is).
-- XP hearts update only on login, death, crystal use and XP level changes by `giveExperienceLevels` (not when an orb
-  levels you up).
-- `StatBoosterItem.usedForPet` is one flag shared by every heart crystal; on a server it stays set after the first use
-  on a pet, making heart crystals fail until restart. (Kept for now — a candidate fix.)
-- The boss blight name uses the missing key `misc.scalinghealth.blight`.
-- The overworld difficulty shown in the debug overlay is the integrated server's (0 on a dedicated server).
+### Bugs of 8.0.2 fixed
+- Heart crystals stopped working: one flag (`usedForPet`) on the item, shared by every heart crystal, was set by a
+  use on a pet and only cleared on the client — on a server every later heart crystal use failed until a restart.
+  Removed (a click on a pet already ends the click).
+- Bonus regeneration came twice as often as configured: the player tick handler ran in both tick phases.
+- Power crystals never dropped: the loot modifiers removed them when power crystals were *enabled* (inverted check).
+  Now they are removed only when disabled.
+- Every loaded mob was processed again (difficulty, health, effects, a new blight roll): the "processed" flag wasn't
+  saved. It is now (`Processed`); data from 1.20.1 without it counts as processed when it has a difficulty or is a
+  blight.
+- XP hearts changed only on login, death, crystal use or `giveExperienceLevels`: level ups from experience orbs were
+  missed. They update now.
+- The "level changed" flag was one for all players, so another player's update could take it; now per player.
+- Sleeping crashed dedicated servers: the sleep warning read the *client* config, which a dedicated server doesn't
+  load. It uses `sleepWarningMessage` from `sh_mechanics/difficulty.json` (the client option `difficulty.warnWhenSleeping`
+  is no longer read).
+- The "weighted" average area mode wasn't weighted (1 - distance² / radius² in integers is 1 for everyone in range).
+- The extrema area mode with `min: true` always gave 0 (it started from 0).
+- Heart crystals were used up past the health limit (hearts compared with max health) and power crystals one or two
+  past the damage limit, giving nothing; they aren't used any more there.
+- Boss blights got the name key `misc.scalinghealth.blight`, which doesn't exist; they use `blight.scalinghealth`
+  ("Blight %s").
+- The debug overlay showed the integrated server's world difficulty (0 on a dedicated server); it shows the one the
+  server sends.
+- A blight killed by a pet whose owner isn't a player crashed (cast to Player).
+- The spawner mob list was a list that grew; a set now.

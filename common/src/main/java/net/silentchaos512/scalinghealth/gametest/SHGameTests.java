@@ -78,6 +78,8 @@ public final class SHGameTests {
         TESTS.put("ores_in_overworld", SHGameTests::oresInOverworld);
         TESTS.put("commands", SHGameTests::commands);
         TESTS.put("difficulty_mutator_items", SHGameTests::difficultyMutatorItems);
+        TESTS.put("crystal_limits", SHGameTests::crystalLimits);
+        TESTS.put("xp_hearts_from_orbs", SHGameTests::xpHeartsFromOrbs);
     }
 
     @GameTestGenerator
@@ -283,6 +285,13 @@ public final class SHGameTests {
         Zombie copy = EntityType.ZOMBIE.create(helper.getLevel());
         copy.load(tag);
         check(helper, SHDifficulty.affected(copy).isBlight() && SHDifficulty.affected(copy).getDifficulty() == 12.5f, "loaded");
+        // processed is saved: a loaded mob keeps its difficulty (1.20.1 processed it again)
+        affected.setProcessed(true);
+        Zombie copy2 = EntityType.ZOMBIE.create(helper.getLevel());
+        copy2.load(zombie.saveWithoutId(new CompoundTag()));
+        copy2.tickCount = 10;
+        SHDifficulty.affected(copy2).tick(copy2);
+        check(helper, SHDifficulty.affected(copy2).getDifficulty() == 12.5f, "reprocessed: " + SHDifficulty.affected(copy2).getDifficulty());
         helper.succeed();
     }
 
@@ -322,8 +331,8 @@ public final class SHGameTests {
     }
 
     /**
-     * The chest loot modifiers add Scaling Health's items to the simple dungeon chest; power crystals are taken out
-     * again (1.20.1 TableGlobalModifier removes them when they are enabled).
+     * The chest loot modifiers add Scaling Health's items to the simple dungeon chest, power crystals included (1.20.1
+     * took them out again: inverted check).
      */
     private static void chestLootModifier(GameTestHelper helper) {
         var level = helper.getLevel();
@@ -343,7 +352,7 @@ public final class SHGameTests {
             }
         }
         check(helper, sawShItem, "no Scaling Health item in 300 dungeon chests");
-        check(helper, !sawPowerCrystal, "power crystal in a dungeon chest");
+        check(helper, sawPowerCrystal, "no power crystal in 300 dungeon chests");
         helper.succeed();
     }
 
@@ -381,6 +390,34 @@ public final class SHGameTests {
         } catch (Exception e) {
             helper.fail("/" + command + ": " + e.getMessage());
         }
+    }
+
+    /** At the limits, crystals aren't used up for nothing (1.20.1 took them past the clamp). */
+    private static void crystalLimits(GameTestHelper helper) {
+        ServerPlayer player = player(helper);
+        player.giveExperienceLevels(30);
+        IPlayerData data = SHPlayers.getPlayerData(player);
+        data.setHeartCrystals(player, 90);
+        data.setPowerCrystalCount(player, SHPlayers.maxPowerCrystals());
+        use(player, new ItemStack(Registration.HEART_CRYSTAL.get()));
+        check(helper, player.getMainHandItem().getCount() == 1, "heart crystal used past the limit");
+        use(player, new ItemStack(Registration.POWER_CRYSTAL.get()));
+        check(helper, player.getMainHandItem().getCount() == 1, "power crystal used past the limit");
+        check(helper, player.experienceLevel == 30, "levels taken");
+        remove(player);
+        helper.succeed();
+    }
+
+    /** Leveling up from experience points updates the XP hearts (10 levels: +1 heart). */
+    private static void xpHeartsFromOrbs(GameTestHelper helper) {
+        ServerPlayer player = player(helper);
+        float before = player.getMaxHealth();
+        player.giveExperiencePoints(160); // levels 0 -> 10
+        player.doTick();
+        check(helper, player.experienceLevel == 10, "level " + player.experienceLevel);
+        check(helper, near(player.getMaxHealth(), before + 2), "max health " + before + " -> " + player.getMaxHealth());
+        remove(player);
+        helper.succeed();
     }
 
     /** Cursed heart +10, enchanted heart -10 difficulty. */

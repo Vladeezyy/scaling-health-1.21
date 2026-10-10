@@ -46,8 +46,8 @@ public final class PlayerBonusRegenHandler {
     }
 
     /**
-     * TickEvent.PlayerTickEvent on the server side. 1.20.1 did not check the phase, so this runs at the start and at
-     * the end of each player tick (the timers count down twice per tick); PlayerMixin calls it twice too.
+     * TickEvent.PlayerTickEvent on the server side, once per tick (1.20.1 didn't check the phase, so the timers counted
+     * down twice per tick: regeneration came twice as often as configured).
      */
     public static void onPlayerTick(Player player) {
         if (player.level().isClientSide) return;
