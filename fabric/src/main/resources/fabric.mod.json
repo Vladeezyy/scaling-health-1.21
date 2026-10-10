@@ -25,5 +25,8 @@
     "forgeconfigapiport": ">=${forgeconfigapiport_version}",
     "minecraft": "${minecraft_version}",
     "java": ">=${java_version}"
+  },
+  "suggests": {
+    "modmenu": "*"
   }
 }

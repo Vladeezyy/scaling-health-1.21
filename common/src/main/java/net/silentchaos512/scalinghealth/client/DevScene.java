@@ -30,6 +30,7 @@ import net.silentchaos512.scalinghealth.client.gui.health.HeartIconStyle;
 import net.silentchaos512.scalinghealth.config.SHConfig;
 import net.silentchaos512.scalinghealth.data.IDifficultyAffected;
 import net.silentchaos512.scalinghealth.objects.Registration;
+import net.silentchaos512.scalinghealth.platform.Services;
 import net.silentchaos512.scalinghealth.utils.MobDifficultyHandler;
 import net.silentchaos512.scalinghealth.utils.config.SHDifficulty;
 import net.silentchaos512.scalinghealth.utils.config.SHPlayers;
@@ -87,7 +88,34 @@ public final class DevScene {
         at(180, mc -> server(mc, p -> p.teleportTo(p.serverLevel(), p.getX(), p.getY(), p.getZ() - 2.5, Set.of(), 180f, 10f)));
         at(190, DevScene::logBlights);
         at(195, mc -> shot(mc, "blight"));
-        at(200, mc -> mc.stop());
+        // the config screen: main, client settings, the hearts section; then the same in Russian
+        at(200, mc -> mc.setScreen(Services.PLATFORM.createConfigScreen(null)));
+        at(205, mc -> shot(mc, "config"));
+        at(207, mc -> press(mc, "Client"));
+        at(212, mc -> shot(mc, "config_client"));
+        at(214, mc -> pressNth(mc, 1)); // the second section, Hearts
+        at(219, mc -> pressNth(mc, 0)); // Health
+        at(221, mc -> pressNth(mc, 0)); // Icons
+        at(224, mc -> shot(mc, "config_hearts"));
+        at(226, mc -> {
+            mc.setScreen(null);
+            mc.options.languageCode = "ru_ru";
+            mc.getLanguageManager().setSelected("ru_ru");
+            mc.reloadResourcePacks();
+        });
+        at(320, mc -> mc.setScreen(Services.PLATFORM.createConfigScreen(null)));
+        at(325, mc -> press(mc, "клиента", "Client")); // Fabric: Forge Config API Port has no Russian
+        at(330, mc -> pressNth(mc, 1));
+        at(335, mc -> pressNth(mc, 0));
+        at(337, mc -> pressNth(mc, 0));
+        at(340, mc -> shot(mc, "config_hearts_ru"));
+        at(342, mc -> {
+            mc.setScreen(null);
+            mc.options.languageCode = "en_us";
+            mc.getLanguageManager().setSelected("en_us");
+            mc.options.save();
+        });
+        at(345, mc -> mc.stop());
     }
 
     private DevScene() {}
@@ -184,6 +212,45 @@ public final class DevScene {
             if (e instanceof net.minecraft.world.entity.Mob mob)
                 ScalingHealth.LOGGER.info("[scene] server {} blight={}", mob.getType().getDescriptionId(), SHDifficulty.affected(mob).isBlight());
         }));
+    }
+
+    /** Presses the first button of the open screen whose text contains the given text. */
+    private static void press(Minecraft mc, String... texts) {
+        for (String text : texts) {
+            if (mc.screen != null && press(mc.screen.children(), text))
+                return;
+        }
+        ScalingHealth.LOGGER.warn("[scene] no button {} on {}", String.join("/", texts), mc.screen);
+    }
+
+    /** Presses the n-th section button ("Edit...") of a config section screen. */
+    private static void pressNth(Minecraft mc, int n) {
+        List<net.minecraft.client.gui.components.AbstractButton> buttons = new ArrayList<>();
+        if (mc.screen != null) collectSectionButtons(mc.screen.children(), buttons);
+        if (n < buttons.size()) buttons.get(n).onPress();
+        else ScalingHealth.LOGGER.warn("[scene] no section button {} on {}", n, mc.screen);
+    }
+
+    private static void collectSectionButtons(List<? extends net.minecraft.client.gui.components.events.GuiEventListener> children,
+                                              List<net.minecraft.client.gui.components.AbstractButton> out) {
+        for (var child : children) {
+            if (child instanceof net.minecraft.client.gui.components.AbstractButton button && button.getMessage().getString().endsWith("..."))
+                out.add(button);
+            if (child instanceof net.minecraft.client.gui.components.events.ContainerEventHandler container)
+                collectSectionButtons(container.children(), out);
+        }
+    }
+
+    private static boolean press(List<? extends net.minecraft.client.gui.components.events.GuiEventListener> children, String text) {
+        for (var child : children) {
+            if (child instanceof net.minecraft.client.gui.components.AbstractButton button && button.getMessage().getString().contains(text)) {
+                button.onPress();
+                return true;
+            }
+            if (child instanceof net.minecraft.client.gui.components.events.ContainerEventHandler container && press(container.children(), text))
+                return true;
+        }
+        return false;
     }
 
     private static void selectTab(Minecraft mc) {

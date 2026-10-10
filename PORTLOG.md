@@ -67,6 +67,9 @@ overlay, the client / server configs and the `sh_mechanics` data pack files.
 - Spawner bonus (`spawnerModifier`): monster spawners, as 1.20.1; the trial spawners new in 1.21 are not spawners
   there.
 - Item tooltips have no world in 1.21: the difficulty hearts show their amount also outside a world (1.20.1: 0).
+- In-game config screen (1.20.1 had none): NeoForge's configuration screen, from the mod list (NeoForge) or Mod Menu
+  (Fabric, through Forge Config API Port). Every option has an English label and a Russian label and tooltip
+  (`scalinghealth.configuration.*`, from `tools/lang`); English tooltips are the config comments.
 - Fabric: the difficulty meter and the debug overlay are drawn after the whole HUD (Forge: after the debug text / the
   chat); the armor row moves up exactly as with NeoForge's left status bar height.
 
@@ -84,8 +87,8 @@ overlay, the client / server configs and the `sh_mechanics` data pack files.
   missed. They update now.
 - The "level changed" flag was one for all players, so another player's update could take it; now per player.
 - Sleeping crashed dedicated servers: the sleep warning read the *client* config, which a dedicated server doesn't
-  load. It uses `sleepWarningMessage` from `sh_mechanics/difficulty.json` (the client option `difficulty.warnWhenSleeping`
-  is no longer read).
+  load. It uses `sleepWarningMessage` from `sh_mechanics/difficulty.json`; the client option `difficulty.warnWhenSleeping`
+  is removed.
 - The "weighted" average area mode wasn't weighted (1 - distance² / radius² in integers is 1 for everyone in range).
 - The extrema area mode with `min: true` always gave 0 (it started from 0).
 - Heart crystals were used up past the health limit (hearts compared with max health) and power crystals one or two

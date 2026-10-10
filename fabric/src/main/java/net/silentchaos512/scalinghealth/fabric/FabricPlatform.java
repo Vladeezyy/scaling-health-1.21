@@ -61,6 +61,11 @@ public class FabricPlatform implements IPlatform {
     }
 
     @Override
+    public net.minecraft.client.gui.screens.Screen createConfigScreen(net.minecraft.client.gui.screens.Screen parent) {
+        return new net.neoforged.neoforge.client.gui.ConfigurationScreen(ScalingHealth.MOD_ID, parent);
+    }
+
+    @Override
     public MobEffect createBandagedEffect() {
         // milk: MilkBucketItemMixin
         return new BandagedEffect();

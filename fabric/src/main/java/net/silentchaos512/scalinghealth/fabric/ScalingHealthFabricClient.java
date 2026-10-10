@@ -1,11 +1,14 @@
 package net.silentchaos512.scalinghealth.fabric;
 
+import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.client.ConfigScreenFactoryRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.silentchaos512.scalinghealth.ScalingHealth;
 import net.silentchaos512.scalinghealth.client.ClientHandler;
 import net.silentchaos512.scalinghealth.client.ClientInit;
 import net.silentchaos512.scalinghealth.client.ClientTicks;
@@ -22,6 +25,9 @@ import net.silentchaos512.scalinghealth.network.SHMechanicsPacket;
 public class ScalingHealthFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        // the configs in NeoForge's config screen, opened from Mod Menu (Forge Config API Port provides both)
+        ConfigScreenFactoryRegistry.INSTANCE.register(ScalingHealth.MOD_ID, ConfigurationScreen::new);
+
         ClientInit.registerParticleFactories((type, factory) -> ParticleFactoryRegistry.getInstance().register(type, factory::apply));
         KeyBindingHelper.registerKeyBinding(KeyManager.TOGGLE_DIFF);
 

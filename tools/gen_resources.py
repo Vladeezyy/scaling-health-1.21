@@ -14,7 +14,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "common/src/main/resources"
-EXTRA = ROOT / "tools/resources"  # port-only files (gametest structure), copied as they are
+EXTRA = ROOT / "tools/resources"  # port-only files (gametest structure, icon), copied as they are
+LANG_EXTRA = ROOT / "tools/lang"  # port-only translations (the config screen), merged into the lang files
 
 # 1.21 renamed the data folders (tags: singular registry names)
 DATA_RENAMES = {
@@ -156,6 +157,13 @@ def main():
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(f, target)
             count += 1
+
+    lang_dir = OUT / "assets/scalinghealth/lang"
+    for f in sorted(LANG_EXTRA.glob("*.json")):
+        target = lang_dir / f.name
+        data = json.loads(target.read_text(encoding="utf-8")) if target.exists() else {}
+        data.update(json.loads(f.read_text(encoding="utf-8")))
+        dump(target, data)
 
     print(f"wrote {count} files to {OUT.relative_to(ROOT)}")
 

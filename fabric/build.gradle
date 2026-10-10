@@ -24,6 +24,9 @@ dependencies {
 
     implementation "com.udojava:EvalEx:${evalex_version}"
     include "com.udojava:EvalEx:${evalex_version}"
+
+    // Mod Menu (opens the config screen) in the dev runs only
+    modLocalRuntime "maven.modrinth:modmenu:11.0.3"
 }
 
 loom {

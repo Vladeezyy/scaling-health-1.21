@@ -23,6 +23,7 @@ public class ColorList {
         // Load a string list
         this.config = builder
                 .comment(comment)
+                .translation(SHConfig.TRANSLATION + path)
                 .defineList(path, defaultList, o -> o instanceof String && Color.validate((String) o));
     }
 

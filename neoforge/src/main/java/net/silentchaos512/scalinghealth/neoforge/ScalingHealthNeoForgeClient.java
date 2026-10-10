@@ -5,7 +5,10 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.player.LocalPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
@@ -26,7 +29,10 @@ import net.silentchaos512.scalinghealth.client.gui.health.HeartDisplayHandler;
 /** NeoForge client entry point (1.20.1 ClientInit, KeyManager, HeartDisplayHandler, DifficultyMeter, BlightRenderEvent). */
 @Mod(value = ScalingHealth.MOD_ID, dist = Dist.CLIENT)
 public class ScalingHealthNeoForgeClient {
-    public ScalingHealthNeoForgeClient(IEventBus modBus) {
+    public ScalingHealthNeoForgeClient(IEventBus modBus, ModContainer container) {
+        // the configs in NeoForge's config screen (Mods list -> Config)
+        container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+
         modBus.addListener(RegisterParticleProvidersEvent.class, event ->
                 ClientInit.registerParticleFactories((type, factory) -> event.registerSpriteSet(type, factory::apply)));
         modBus.addListener(RegisterKeyMappingsEvent.class, event -> event.register(KeyManager.TOGGLE_DIFF));

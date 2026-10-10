@@ -12,14 +12,16 @@ Extra health and damage for players and mobs, with a highly customizable difficu
 - **Players** raise their max health with **heart crystals** (and XP levels) and their attack damage with **power
   crystals**; bandages and medkits heal over time; cursed / enchanted / chance hearts change the difficulty.
 - A compact **heart HUD**: colored rows instead of a wall of hearts, heart tanks, absorption shields.
-- Everything is tunable: client / server configs and the `sh_mechanics` data pack files (expressions included).
+- Everything is tunable: client / server configs (in game: the mod list on NeoForge, Mod Menu on Fabric) and the
+  `sh_mechanics` data pack files (expressions included).
 
 The behaviour is that of 8.0.2; every difference is listed in [PORTLOG.md](PORTLOG.md).
 
 ## Requirements
 
 - **NeoForge** 21.1.197 or newer for Minecraft 1.21.1.
-- **Fabric**: Fabric Loader 0.16.14+, Fabric API, and Forge Config API Port (the configs use NeoForge's config API).
+- **Fabric**: Fabric Loader 0.16.14+, Fabric API, and Forge Config API Port (the configs use NeoForge's config API);
+  Mod Menu for the config screen (optional).
 
 Install on the server and on the clients.
 
