@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.silentchaos512.scalinghealth.fabric.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["LivingEntityDeathMixin", "LootTableMixin", "MilkBucketItemMixin", "ServerPlayerDeathMixin"],
+  "client": ["GuiMixin", "LivingEntityRendererMixin"],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

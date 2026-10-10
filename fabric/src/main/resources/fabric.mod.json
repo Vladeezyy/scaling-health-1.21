@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "Extra health and damage for players and mobs. Highly customizable difficulty system.\nUnofficial port of Scaling Health 8.0.2 (SilentChaos512, MIT) to Minecraft ${minecraft_version} / Fabric.",
+  "authors": ["SilentChaos512 (original)", "port contributors"],
+  "contact": {
+    "homepage": "https://github.com/SilentChaos512/ScalingHealth",
+    "issues": "https://github.com/SilentChaos512/ScalingHealth/issues"
+  },
+  "license": "${license}",
+  "icon": "scalinghealth_icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["net.silentchaos512.scalinghealth.fabric.ScalingHealthFabric"],
+    "client": ["net.silentchaos512.scalinghealth.fabric.ScalingHealthFabricClient"],
+    "fabric-gametest": ["net.silentchaos512.scalinghealth.gametest.SHGameTests"]
+  },
+  "mixins": ["${mod_id}.mixins.json", "${mod_id}.fabric.mixins.json"],
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "forgeconfigapiport": ">=${forgeconfigapiport_version}",
+    "minecraft": "${minecraft_version}",
+    "java": ">=${java_version}"
+  }
+}

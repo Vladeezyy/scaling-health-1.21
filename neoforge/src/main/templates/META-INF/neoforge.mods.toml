@@ -1,0 +1,33 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="${mod_license}"
+issueTrackerURL="https://github.com/SilentChaos512/ScalingHealth/issues"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+displayURL="https://github.com/SilentChaos512/ScalingHealth"
+logoFile="scalinghealth_logo.png"
+authors="SilentChaos512 (original); port contributors"
+description='''
+Extra health and damage for players and mobs. Highly customizable difficulty system.
+Unofficial port of Scaling Health 8.0.2 (SilentChaos512, MIT) to Minecraft ${minecraft_version} / NeoForge.
+'''
+
+[[mixins]]
+config="${mod_id}.mixins.json"
+
+[[dependencies.${mod_id}]]
+    modId="neoforge"
+    type="required"
+    versionRange="${neo_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"

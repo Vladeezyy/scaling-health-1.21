@@ -1,0 +1,10 @@
+{
+  "type": "scalinghealth:table_loot_mod",
+  "conditions": [
+    {
+      "condition": "neoforge:loot_table_id",
+      "loot_table_id": "minecraft:chests/stronghold_library"
+    }
+  ],
+  "table": "scalinghealth:chests_addition/stronghold_library"
+}

@@ -1,0 +1,78 @@
+plugins {
+    id 'multiloader-loader'
+    id 'net.neoforged.moddev'
+}
+
+neoForge {
+    version = neo_version
+    parchment {
+        minecraftVersion = parchment_minecraft
+        mappingsVersion = parchment_version
+    }
+    runs {
+        configureEach {
+            gameDirectory = project.file('run')
+            systemProperty 'neoforge.enabledGameTestNamespaces', mod_id
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+        client {
+            client()
+        }
+        server {
+            server()
+            programArgument '--nogui'
+        }
+        gameTestServer {
+            type = 'gameTestServer'
+        }
+        // Scripted test scene (net.silentchaos512.scalinghealth.client.DevScene): joins run/saves/sh_scene,
+        // screenshots the HUD, items and blights to run/screenshots/scene_*.png and quits.
+        scene {
+            client()
+            programArguments.addAll '--quickPlaySingleplayer', 'sh_scene'
+            systemProperty 'scalinghealth.scene', 'true'
+        }
+    }
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    implementation "com.udojava:EvalEx:${evalex_version}"
+    jarJar "com.udojava:EvalEx:${evalex_version}"
+    // a plain library: the dev runs need it on the game's class path (the jar has it as a jar-in-jar)
+    additionalRuntimeClasspath "com.udojava:EvalEx:${evalex_version}"
+}
+
+// neoforge.mods.toml comes from src/main/templates with the gradle properties
+var generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version_range      : neo_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : license,
+            mod_version            : mod_version,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from 'src/main/templates'
+    into 'build/generated/sources/modMetadata'
+}
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+// The 1.21.1 game test server reuses run/world: each run starts from a fresh world.
+def gameTestWorld = file('run/world')
+tasks.matching { it.name == 'runGameTestServer' }.configureEach {
+    doFirst { gameTestWorld.deleteDir() }
+}
