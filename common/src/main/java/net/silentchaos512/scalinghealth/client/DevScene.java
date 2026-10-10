@@ -13,10 +13,12 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.GameType;
@@ -83,6 +85,7 @@ public final class DevScene {
         at(176, mc -> shot(mc, "items"));
         at(178, mc -> mc.setScreen(null));
         at(180, mc -> server(mc, p -> p.teleportTo(p.serverLevel(), p.getX(), p.getY(), p.getZ() - 2.5, Set.of(), 180f, 10f)));
+        at(190, DevScene::logBlights);
         at(195, mc -> shot(mc, "blight"));
         at(200, mc -> mc.stop());
     }
@@ -139,13 +142,16 @@ public final class DevScene {
 
         SHPlayers.getPlayerData(player).setHeartCrystals(player, 20);
         player.setHealth(47);
-        player.setAbsorptionAmount(8);
+        // 1.21 caps absorption at the max_absorption attribute: the effect gives both (8 points)
+        player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 20 * 600, 1, false, false));
         player.getFoodData().setFoodLevel(20);
         SHDifficulty.source(player).setDifficulty(120);
 
         Zombie blight = EntityType.ZOMBIE.create(level);
         blight.moveTo(base.getX() + 1.5, base.getY(), base.getZ() - 4.5, 0, 0);
         blight.setNoAi(true);
+        // no burning in the sun (vanilla flames would hide the blight's)
+        blight.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
         level.addFreshEntity(blight);
         IDifficultyAffected affected = SHDifficulty.affected(blight);
         affected.forceDifficulty(60);
@@ -155,6 +161,7 @@ public final class DevScene {
         Skeleton skeleton = EntityType.SKELETON.create(level);
         skeleton.moveTo(base.getX() - 1.5, base.getY(), base.getZ() - 4.5, 0, 0);
         skeleton.setNoAi(true);
+        skeleton.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
         level.addFreshEntity(skeleton);
 
         var inv = player.getInventory();
@@ -165,6 +172,18 @@ public final class DevScene {
         for (int i = 0; i < items.size(); i++)
             inv.setItem(i, new ItemStack(items.get(i).get(), i < 2 ? 3 : 8));
         inv.selected = 0;
+    }
+
+    /** The blight flag of the mobs on both sides (the client learns it from ClientBlightMessage). */
+    private static void logBlights(Minecraft mc) {
+        for (var entity : mc.level.entitiesForRendering()) {
+            if (entity instanceof net.minecraft.world.entity.Mob mob)
+                ScalingHealth.LOGGER.info("[scene] client {} blight={}", mob.getType().getDescriptionId(), SHDifficulty.affected(mob).isBlight());
+        }
+        server(mc, p -> p.serverLevel().getAllEntities().forEach(e -> {
+            if (e instanceof net.minecraft.world.entity.Mob mob)
+                ScalingHealth.LOGGER.info("[scene] server {} blight={}", mob.getType().getDescriptionId(), SHDifficulty.affected(mob).isBlight());
+        }));
     }
 
     private static void selectTab(Minecraft mc) {

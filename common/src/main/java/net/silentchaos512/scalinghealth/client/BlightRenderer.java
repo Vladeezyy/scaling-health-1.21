@@ -2,6 +2,7 @@ package net.silentchaos512.scalinghealth.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -40,6 +41,9 @@ public final class BlightRenderer {
          float zOffset = 0.0F;
          Quaternionf cam = Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation();
          stack.mulPose(new Quaternionf(0, cam.y, 0, cam.w));
+         // 1.20.5 turned the camera orientation half a turn (vanilla name tags flipped their x scale then); without
+         // this the flames face away from the camera and are culled
+         stack.mulPose(Axis.YP.rotationDegrees(180f));
          stack.translate(0, 0, hwRatio * 0.02f);
          int i = 0;
 
