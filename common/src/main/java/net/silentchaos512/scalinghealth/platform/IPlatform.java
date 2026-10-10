@@ -36,9 +36,6 @@ public interface IPlatform {
     /** Lets a GameTest mock player's connection carry every mod's packets. */
     void configureMockConnection(Connection connection);
 
-    /** The config screen (client only; the dev scene opens it). */
-    net.minecraft.client.gui.screens.Screen createConfigScreen(net.minecraft.client.gui.screens.Screen parent);
-
     /** The Bandaged effect; NeoForge's version keeps milk from curing it (1.20.1 getCurativeItems was empty). */
     MobEffect createBandagedEffect();
 }

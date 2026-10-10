@@ -30,7 +30,6 @@ import net.silentchaos512.scalinghealth.client.gui.health.HeartIconStyle;
 import net.silentchaos512.scalinghealth.config.SHConfig;
 import net.silentchaos512.scalinghealth.data.IDifficultyAffected;
 import net.silentchaos512.scalinghealth.objects.Registration;
-import net.silentchaos512.scalinghealth.platform.Services;
 import net.silentchaos512.scalinghealth.utils.MobDifficultyHandler;
 import net.silentchaos512.scalinghealth.utils.config.SHDifficulty;
 import net.silentchaos512.scalinghealth.utils.config.SHPlayers;
@@ -52,6 +51,8 @@ public final class DevScene {
     private static final boolean ENABLED = System.getProperty("scalinghealth.scene") != null;
     private static final List<Step> STEPS = new ArrayList<>();
     private static int tick;
+    /** The loader's config screen (set by the client entry points; IPlatform is loaded on servers too). */
+    public static java.util.function.UnaryOperator<Screen> configScreen = parent -> null;
 
     private record Step(int at, Consumer<Minecraft> action) {}
 
@@ -89,7 +90,7 @@ public final class DevScene {
         at(190, DevScene::logBlights);
         at(195, mc -> shot(mc, "blight"));
         // the config screen: main, client settings, the hearts section; then the same in Russian
-        at(200, mc -> mc.setScreen(Services.PLATFORM.createConfigScreen(null)));
+        at(200, mc -> mc.setScreen(configScreen.apply(null)));
         at(205, mc -> shot(mc, "config"));
         at(207, mc -> press(mc, "Client"));
         at(212, mc -> shot(mc, "config_client"));
@@ -103,7 +104,7 @@ public final class DevScene {
             mc.getLanguageManager().setSelected("ru_ru");
             mc.reloadResourcePacks();
         });
-        at(320, mc -> mc.setScreen(Services.PLATFORM.createConfigScreen(null)));
+        at(320, mc -> mc.setScreen(configScreen.apply(null)));
         at(325, mc -> press(mc, "клиента", "Client")); // Fabric: Forge Config API Port has no Russian
         at(330, mc -> pressNth(mc, 1));
         at(335, mc -> pressNth(mc, 0));

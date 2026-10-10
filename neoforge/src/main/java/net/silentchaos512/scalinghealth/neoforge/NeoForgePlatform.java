@@ -72,12 +72,6 @@ public class NeoForgePlatform implements IPlatform {
     }
 
     @Override
-    public net.minecraft.client.gui.screens.Screen createConfigScreen(net.minecraft.client.gui.screens.Screen parent) {
-        return new net.neoforged.neoforge.client.gui.ConfigurationScreen(
-                net.neoforged.fml.ModList.get().getModContainerById(ScalingHealth.MOD_ID).orElseThrow(), parent);
-    }
-
-    @Override
     public MobEffect createBandagedEffect() {
         return new BandagedEffect() {
             @Override

@@ -27,6 +27,7 @@ public class ScalingHealthFabricClient implements ClientModInitializer {
     public void onInitializeClient() {
         // the configs in NeoForge's config screen, opened from Mod Menu (Forge Config API Port provides both)
         ConfigScreenFactoryRegistry.INSTANCE.register(ScalingHealth.MOD_ID, ConfigurationScreen::new);
+        DevScene.configScreen = parent -> new ConfigurationScreen(ScalingHealth.MOD_ID, parent);
 
         ClientInit.registerParticleFactories((type, factory) -> ParticleFactoryRegistry.getInstance().register(type, factory::apply));
         KeyBindingHelper.registerKeyBinding(KeyManager.TOGGLE_DIFF);

@@ -32,6 +32,7 @@ public class ScalingHealthNeoForgeClient {
     public ScalingHealthNeoForgeClient(IEventBus modBus, ModContainer container) {
         // the configs in NeoForge's config screen (Mods list -> Config)
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        DevScene.configScreen = parent -> new ConfigurationScreen(container, parent);
 
         modBus.addListener(RegisterParticleProvidersEvent.class, event ->
                 ClientInit.registerParticleFactories((type, factory) -> event.registerSpriteSet(type, factory::apply)));
