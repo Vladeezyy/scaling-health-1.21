@@ -12,6 +12,8 @@ Extra health and damage for players and mobs, with a highly customizable difficu
 - **Players** raise their max health with **heart crystals** (and XP levels) and their attack damage with **power
   crystals**; bandages and medkits heal over time; cursed / enchanted / chance hearts change the difficulty.
 - A compact **heart HUD**: colored rows instead of a wall of hearts, heart tanks, absorption shields.
+- Languages: English, Russian, Ukrainian, German, Spanish, Portuguese (Brazil); Italian, Polish, Chinese and Venezuelan
+  Spanish from 8.0.2 (partial).
 - Everything is tunable: client / server configs (in game: the mod list on NeoForge, Mod Menu on Fabric) and the
   `sh_mechanics` data pack files (expressions included).
 

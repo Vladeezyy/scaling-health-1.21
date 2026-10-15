@@ -72,6 +72,9 @@ overlay, the client / server configs and the `sh_mechanics` data pack files.
   (`scalinghealth.configuration.*`, from `tools/lang`); English tooltips are the config comments.
 - Fabric: the difficulty meter and the debug overlay are drawn after the whole HUD (Forge: after the debug text / the
   chat); the armor row moves up exactly as with NeoForge's left status bar height.
+- Languages: English, Russian, Ukrainian, German, Spanish and Portuguese (Brazil) are complete (German and Spanish are
+  new; the Russian, Ukrainian and Portuguese files of 8.0.2 got their missing keys, all in `tools/lang`). Written for
+  the port, not by native speakers. The Russian and Ukrainian "Player: %s %s" had two arguments for one.
 
 ### Bugs of 8.0.2 fixed
 - Heart crystals stopped working: one flag (`usedForPet`) on the item, shared by every heart crystal, was set by a

@@ -104,5 +104,21 @@
   "scalinghealth.configuration.hearts.health.icons.colors": "Цвета рядов",
   "scalinghealth.configuration.hearts.health.icons.colors.tooltip": "Цвет каждого ряда сердец; если рядов больше, цвета идут по кругу",
   "scalinghealth.configuration.hearts.absorption.icons.colors": "Цвета рядов",
-  "scalinghealth.configuration.hearts.absorption.icons.colors.tooltip": "Цвет каждого ряда поглощения; если рядов больше, цвета идут по кругу"
+  "scalinghealth.configuration.hearts.absorption.icons.colors.tooltip": "Цвет каждого ряда поглощения; если рядов больше, цвета идут по кругу",
+  "block.scalinghealth.deepslate_heart_crystal_ore": "Глубинносланцевая руда кристалла сердец",
+  "block.scalinghealth.deepslate_power_crystal_ore": "Глубинносланцевая руда кристалла силы",
+  "command.scalinghealth.difficulty.server": "Сложность сервера: %s",
+  "command.scalinghealth.playerName": "Игрок: %s",
+  "item.scalinghealth.chance_heart": "Случайное сердце",
+  "item.scalinghealth.difficulty_changer.effectDesc": "Сложность %s",
+  "item.scalinghealth.healing_item.value": "Восстанавливает %d%% здоровья за %d сек.",
+  "item.scalinghealth.stat_booster.notEnoughXP": "Для этого нужно %d уровней опыта.",
+  "key.scalinghealth.difficultyMeter": "Показать/скрыть шкалу сложности",
+  "misc.scalinghealth.afkmessage": "Вы отошли (AFK): сложность будет расти медленнее.",
+  "scalinghealth.modes.difficulty.average": "Среднее",
+  "scalinghealth.modes.difficulty.distance": "Расстояние",
+  "scalinghealth.modes.difficulty.distance_and_time": "Расстояние и время",
+  "scalinghealth.modes.difficulty.extrema": "Крайние значения",
+  "scalinghealth.modes.difficulty.server_wide": "Общая для сервера",
+  "scalinghealth.tab": "Scaling Health"
 }
