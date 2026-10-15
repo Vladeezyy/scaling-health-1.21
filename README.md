@@ -1,7 +1,7 @@
 # Scaling Health for Minecraft 1.21.1 (NeoForge and Fabric)
 
 An unofficial port of [Scaling Health](https://github.com/SilentChaos512/ScalingHealth) 8.0.2 by SilentChaos512
-(Minecraft 1.20.1, Forge) to Minecraft 1.21.1, for NeoForge and for Fabric. MIT, like the original.
+(Minecraft 1.20.1, Forge) to Minecraft 1.21.1, for NeoForge and for Fabric. License: LGPL-3.0-only (see [License](#license)).
 
 Extra health and damage for players and mobs, with a highly customizable difficulty system:
 
@@ -43,3 +43,7 @@ The jars are in `neoforge/build/libs` and `fabric/build/libs`.
 
 Scaling Health is by SilentChaos512 (and contributors); this port only updates it. SilentLib / silent-utils helpers
 (MIT, SilentChaos512) and EvalEx (MIT, Udo Klimaschewski) are included.
+
+## License
+
+**LGPL-3.0-only** ([LICENSE](LICENSE), GPL-3.0 text in [COPYING](licenses/COPYING)), Copyright (c) 2026 Vladeezyy. The original Scaling Health, SilentLib / silent-utils and EvalEx are under the MIT License; the original license text and copyright notice are kept in [LICENSE-MIT](licenses/LICENSE-MIT). Forks and modified versions must stay open under the same license and credit the authors. Please download the mod only from the official release pages.
