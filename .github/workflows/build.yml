@@ -1,5 +1,5 @@
-# Build on every push and pull request, then the release jars on real NeoForge and Fabric servers
-# (tools/servertest.sh). The jars are kept as artifacts.
+# Build on every push and pull request, then the GameTests on headless servers of both loaders and the release jars on
+# real servers (tools/servertest.sh). The jars are kept as artifacts.
 name: Build
 
 on:
@@ -40,6 +40,15 @@ jobs:
 
       - name: Build
         run: chmod +x gradlew && ./gradlew build --console=plain
+
+      - name: GameTests (NeoForge)
+        run: ./gradlew :neoforge:runGameTestServer --console=plain
+
+      - name: GameTests (Fabric)
+        if: ${{ !cancelled() }}
+        run: |
+          mkdir -p fabric/run-gametest && echo "eula=true" > fabric/run-gametest/eula.txt
+          ./gradlew :fabric:runGametest --console=plain
 
       # tools/servertest.sh: the release jars on real NeoForge and Fabric servers
       - name: Server test
