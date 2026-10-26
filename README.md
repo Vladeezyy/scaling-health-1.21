@@ -27,20 +27,6 @@ The behaviour is that of 8.0.2; every difference is listed in [PORTLOG.md](PORTL
 
 Install on the server and on the clients.
 
-## Building
-
-JDK 21 for the mod, JDK 25 to run Gradle (Loom):
-
-```
-./gradlew build
-```
-
-The jars are in `neoforge/build/libs` and `fabric/build/libs`.
-
-- `./gradlew :neoforge:runGameTestServer`, `./gradlew :fabric:runGametest`: in-game tests.
-- `./gradlew :neoforge:runScene` / `:fabric:runScene`: screenshots of the HUD (world `run/saves/sh_scene`).
-- `python3 tools/gen_resources.py`: regenerates the resources from the 1.20.1 ones.
-
 ## Credits
 
 Scaling Health is by SilentChaos512 (and contributors); this port only updates it. SilentLib / silent-utils helpers
