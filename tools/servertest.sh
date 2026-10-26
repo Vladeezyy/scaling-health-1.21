@@ -13,10 +13,14 @@ NEOFORGE=21.1.201
 FABRIC_LOADER=0.16.14
 JAVA=${JAVA:-/opt/homebrew/opt/openjdk@21/bin/java}
 FAILS=0
+# Windows (Git Bash): "python3" is the Microsoft Store stub, the NeoForge server starts from win_args.txt, no pkill
+PY=python3; python3 -c '' 2>/dev/null || PY=python
+ARGS=unix_args.txt; case "$(uname -s)" in MINGW*|MSYS*|CYGWIN*) ARGS=win_args.txt ;; esac
+command -v pkill > /dev/null || pkill() { :; }
 
 modrinth_file() { # <project> <loader>: URL of the newest file for MC 1.21.1
     curl -fsSL "https://api.modrinth.com/v2/project/$1/version?game_versions=%5B%22$MC%22%5D&loaders=%5B%22$2%22%5D" \
-        | python3 -c 'import json,sys; print(json.load(sys.stdin)[0]["files"][0]["url"])'
+        | "$PY" -c 'import json,sys; print(json.load(sys.stdin)[0]["files"][0]["url"])'
 }
 
 for loader in $LOADERS; do
@@ -24,12 +28,12 @@ for loader in $LOADERS; do
     mkdir -p "$dir/mods"
     case $loader in
         neoforge)
-            if [ ! -f "$dir/libraries/net/neoforged/neoforge/$NEOFORGE/unix_args.txt" ]; then
+            if [ ! -f "$dir/libraries/net/neoforged/neoforge/$NEOFORGE/$ARGS" ]; then
                 curl -fsSL -o "$dir/neoforge-installer.jar" "https://maven.neoforged.net/releases/net/neoforged/neoforge/$NEOFORGE/neoforge-$NEOFORGE-installer.jar"
                 (cd "$dir" && "$JAVA" -jar neoforge-installer.jar --installServer > installer.log 2>&1)
             fi
             jar=$(ls neoforge/build/libs/scalinghealth-neoforge-*.jar | head -1)
-            start=("$JAVA" -Xmx3G @libraries/net/neoforged/neoforge/$NEOFORGE/unix_args.txt nogui) ;;
+            start=("$JAVA" -Xmx3G @libraries/net/neoforged/neoforge/$NEOFORGE/$ARGS nogui) ;;
         fabric)
             if [ ! -f "$dir/fabric-server-launch.jar" ]; then
                 curl -fsSL -o "$dir/fabric-server-launch.jar" "https://meta.fabricmc.net/v2/versions/loader/$MC/$FABRIC_LOADER/1.0.1/server/jar"
