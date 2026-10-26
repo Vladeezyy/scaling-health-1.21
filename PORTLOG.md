@@ -112,3 +112,11 @@ overlay, the client / server configs and the `sh_mechanics` data pack files.
   server sends.
 - A blight killed by a pet whose owner isn't a player crashed (cast to Player).
 - The spawner mob list was a list that grew; a set now.
+
+### Open issues of the original that don't apply to the port
+- [#467](https://github.com/SilentChaos512/ScalingHealth/issues/467) "ClientTicks queue overflow": the log is from
+  Minecraft 1.12.2, where SilentLib queued every data sync packet as a client tick action (at most 200). The port has
+  no such queue: `ClientTicks` only counts ticks and the 1.21 payload handlers run the packets.
+- [#450](https://github.com/SilentChaos512/ScalingHealth/issues/450) "Not losing difficulty on death": the default
+  `onPlayerDeath` mutator is `difficulty` (no change); a pack sets another expression in `sh_mechanics/difficulty.json`.
+
