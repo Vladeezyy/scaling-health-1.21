@@ -37,6 +37,8 @@ import net.silentchaos512.scalinghealth.event.DifficultyEvents;
 import net.silentchaos512.scalinghealth.objects.Registration;
 import net.silentchaos512.scalinghealth.objects.item.HeartCrystal;
 import net.silentchaos512.scalinghealth.platform.Services;
+import net.silentchaos512.scalinghealth.resources.mechanics.ItemMechanics;
+import net.silentchaos512.scalinghealth.resources.mechanics.SHMechanicListener;
 import net.silentchaos512.scalinghealth.resources.mechanics.SHMechanics;
 import net.silentchaos512.scalinghealth.utils.MobDifficultyHandler;
 import net.silentchaos512.scalinghealth.utils.config.SHDifficulty;
@@ -80,6 +82,9 @@ public final class SHGameTests {
         TESTS.put("difficulty_mutator_items", SHGameTests::difficultyMutatorItems);
         TESTS.put("crystal_limits", SHGameTests::crystalLimits);
         TESTS.put("xp_hearts_from_orbs", SHGameTests::xpHeartsFromOrbs);
+        TESTS.put("broken_mechanics_file", SHGameTests::brokenMechanicsFile);
+        TESTS.put("end_return_keeps_bonuses", SHGameTests::endReturnKeepsBonuses);
+        TESTS.put("nether_keeps_bonuses", SHGameTests::netherKeepsBonuses);
     }
 
     @GameTestGenerator
@@ -428,6 +433,59 @@ public final class SHGameTests {
         check(helper, near(SHDifficulty.source(player).getDifficulty(), 60), "cursed " + SHDifficulty.source(player).getDifficulty());
         use(player, new ItemStack(Registration.ENCHANTED_HEART.get()));
         check(helper, near(SHDifficulty.source(player).getDifficulty(), 50), "enchanted " + SHDifficulty.source(player).getDifficulty());
+        remove(player);
+        helper.succeed();
+    }
+
+    /** A data pack file with a wrong value (issues #438, #443): no exception (the reload would fail), the mod's file is used. */
+    private static void brokenMechanicsFile(GameTestHelper helper) {
+        com.google.gson.JsonObject json = new com.google.gson.JsonObject();
+        json.addProperty("heartCrystalHealthIncrease", 0.5);
+        var items = SHMechanicListener.parse(ItemMechanics.CODEC, json, ItemMechanics.FILE);
+        check(helper, items.heartCrystalHealthIncrease() == 1 && items.heartCrystalLevelCost() == 3,
+                "fallback " + items.heartCrystalHealthIncrease() + " / " + items.heartCrystalLevelCost());
+        helper.succeed();
+    }
+
+    private static ServerPlayer withBonuses(GameTestHelper helper) {
+        ServerPlayer player = player(helper);
+        IPlayerData data = SHPlayers.getPlayerData(player);
+        data.setHeartCrystals(player, 5);
+        data.setPowerCrystalCount(player, 2);
+        player.giveExperienceLevels(10);
+        player.doTick();
+        return player;
+    }
+
+    /** Leaving the End makes a new player without a death (issue #458): health and damage bonuses stay. */
+    private static void endReturnKeepsBonuses(GameTestHelper helper) {
+        ServerPlayer player = withBonuses(helper);
+        float health = player.getMaxHealth();
+        double damage = player.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        ServerPlayer clone = new ServerPlayer(player.getServer(), helper.getLevel(), player.getGameProfile(), player.clientInformation());
+        clone.restoreFrom(player, true);
+        DifficultyEvents.onPlayerClone(player, clone, false);
+        check(helper, near(clone.getMaxHealth(), health), "max health " + health + " -> " + clone.getMaxHealth());
+        check(helper, near(clone.getAttributeValue(Attributes.ATTACK_DAMAGE), damage), "attack damage " + damage + " -> " + clone.getAttributeValue(Attributes.ATTACK_DAMAGE));
+        remove(player);
+        helper.succeed();
+    }
+
+    /** Going to the Nether and back (issues #458, #464): the crystal and XP hearts and the damage stay. */
+    private static void netherKeepsBonuses(GameTestHelper helper) {
+        ServerPlayer player = withBonuses(helper);
+        float health = player.getMaxHealth();
+        double damage = player.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        var nether = player.getServer().getLevel(net.minecraft.world.level.Level.NETHER);
+        var home = helper.getLevel();
+        var back = player.position();
+        player.teleportTo(nether, 0.5, 70, 0.5, 0, 0);
+        player.doTick();
+        check(helper, player.level() == nether && near(player.getMaxHealth(), health), "nether max health " + health + " -> " + player.getMaxHealth());
+        player.teleportTo(home, back.x, back.y, back.z, 0, 0);
+        player.doTick();
+        check(helper, near(player.getMaxHealth(), health), "back max health " + health + " -> " + player.getMaxHealth());
+        check(helper, near(player.getAttributeValue(Attributes.ATTACK_DAMAGE), damage), "attack damage " + damage + " -> " + player.getAttributeValue(Attributes.ATTACK_DAMAGE));
         remove(player);
         helper.succeed();
     }

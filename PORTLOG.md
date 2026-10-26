@@ -77,6 +77,16 @@ overlay, the client / server configs and the `sh_mechanics` data pack files.
   the port, not by native speakers. The Russian and Ukrainian "Player: %s %s" had two arguments for one.
 
 ### Bugs of 8.0.2 fixed
+- Returning from the End reset max health and attack damage to the base values until the next change: the new player
+  got the data but not the attribute modifiers ([#458](https://github.com/SilentChaos512/ScalingHealth/issues/458)).
+  They are applied on that copy too (GameTest `end_return_keeps_bonuses`; the Nether keeps them, `nether_keeps_bonuses`).
+- A wrong value in a data pack's `sh_mechanics` file (for example `"heartCrystalHealthIncrease": 0.5`) threw: `/reload`
+  failed and the world could not be joined again ([#438](https://github.com/SilentChaos512/ScalingHealth/issues/438),
+  [#443](https://github.com/SilentChaos512/ScalingHealth/issues/443)). The error is logged with the file and the mod's own
+  file is used (GameTest `broken_mechanics_file`).
+- Mobs didn't apply their effects (poison of cave spiders, wither) with a damage scaling mode other than `MAX_HEALTH`
+  ([#441](https://github.com/SilentChaos512/ScalingHealth/issues/441)): 1.20.1 canceled the hit and hit again; the port
+  changes the amount of the first hit.
 - Heart crystals stopped working: one flag (`usedForPet`) on the item, shared by every heart crystal, was set by a
   use on a pet and only cleared on the client — on a server every later heart crystal use failed until a restart.
   Removed (a click on a pet already ends the click).

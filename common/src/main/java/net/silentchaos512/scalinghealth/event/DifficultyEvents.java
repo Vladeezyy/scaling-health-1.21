@@ -105,8 +105,13 @@ public final class DifficultyEvents {
         // Player is cloned. Copy capabilities before applying health/difficulty changes if needed.
         EntityDataHolder.copyForClone(original, clone);
 
-        // If not dead, player is returning from the End
-        if (!wasDeath) return;
+        // If not dead, player is returning from the End. The new player has none of the attribute modifiers (1.20.1
+        // didn't put them back either: max health and damage fell to the base values until the next change, #458)
+        if (!wasDeath) {
+            IPlayerData data = EntityDataHolder.playerData(clone);
+            if (data != null) data.updateStats(clone);
+            return;
+        }
 
         // Apply death mutators
         IPlayerData data = EntityDataHolder.playerData(clone);
